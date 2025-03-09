@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statystyki - SpeedRent</title>
+    <link href="css/output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Nawigacja -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SpeedRent</h1>
+            <ul class="flex space-x-6">
+                <li><a href="index.html#oferta" class="hover:underline">Oferta</a></li>
+                <li><a href="index.html#cennik" class="hover:underline">Cennik</a></li>
+                <li><a href="kontakt.html" class="hover:underline">Kontakt</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Sekcja powitalna -->
+    <header class="bg-blue-800 text-white text-center py-16">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold mb-4">Statystyki odwiedzin</h2>
+            <p class="text-xl">Sprawdź jak użytkownicy korzystają z naszej strony</p>
+        </div>
+    </header>
+
+    <!-- Sekcja statystyk -->
+    <section id="stats" class="py-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-8">Szczegółowe dane</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Łączna liczba odwiedzin</h4>
+                    <p class="text-gray-600 text-lg" id="totalVisits">Ładowanie...</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Unikalni użytkownicy</h4>
+                    <p class="text-gray-600 text-lg" id="uniqueVisitors">Ładowanie...</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Najpopularniejsze strony</h4>
+                    <table class="w-full text-gray-600" id="topPages">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Strona</th>
+                                <th class="text-right pb-2">Odwiedziny</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Źródła odwiedzin</h4>
+                    <table class="w-full text-gray-600" id="referrers">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Źródło</th>
+                                <th class="text-right pb-2">Odwiedziny</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Przeglądarki</h4>
+                    <table class="w-full text-gray-600" id="browsers">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Przeglądarka</th>
+                                <th class="text-right pb-2">Odwiedziny</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Strony wejściowe</h4>
+                    <table class="w-full text-gray-600" id="entryPages">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Strona</th>
+                                <th class="text-right pb-2">Wejścia</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Strony wyjściowe</h4>
+                    <table class="w-full text-gray-600" id="exitPages">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Strona</th>
+                                <th class="text-right pb-2">Wyjścia</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Ścieżki użytkownika</h4>
+                    <table class="w-full text-gray-600" id="userPaths">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Ścieżka</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stopka -->
+    <footer class="bg-blue-600 text-white text-center p-4">
+        <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+
+    <script>
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+
+                console.log('Dane z serwera:', stats); // Logowanie danych dla debugowania
+
+                // Aktualizacja danych ogólnych
+                document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
+                document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
+
+                // Aktualizacja najpopularniejszych stron
+                const topPagesBody = document.querySelector('#topPages tbody');
+                topPagesBody.innerHTML = stats.topPages && stats.topPages.length > 0 
+                    ? stats.topPages.map(page => `
+                        <tr>
+                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
+                            <td class="py-1 text-right">${page.count}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+                // Aktualizacja źródeł odwiedzin
+                const referrersBody = document.querySelector('#referrers tbody');
+                referrersBody.innerHTML = stats.referrers && stats.referrers.length > 0 
+                    ? stats.referrers.map(ref => `
+                        <tr>
+                            <td class="py-1">${ref.referrer || 'Bezpośrednie'}</td>
+                            <td class="py-1 text-right">${ref.count}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+                // Aktualizacja przeglądarek
+                const browsersBody = document.querySelector('#browsers tbody');
+                browsersBody.innerHTML = stats.browsers && stats.browsers.length > 0 
+                    ? stats.browsers.map(browser => `
+                        <tr>
+                            <td class="py-1">${browser.browser || 'Nieznana'}</td>
+                            <td class="py-1 text-right">${browser.count}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+                // Aktualizacja stron wejściowych
+                const entryPagesBody = document.querySelector('#entryPages tbody');
+                entryPagesBody.innerHTML = stats.entryPages && stats.entryPages.length > 0 
+                    ? stats.entryPages.map(page => `
+                        <tr>
+                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
+                            <td class="py-1 text-right">${page.count}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+                // Aktualizacja stron wyjściowych
+                const exitPagesBody = document.querySelector('#exitPages tbody');
+                exitPagesBody.innerHTML = stats.exitPages && stats.exitPages.length > 0 
+                    ? stats.exitPages.map(page => `
+                        <tr>
+                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
+                            <td class="py-1 text-right">${page.count}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+                // Aktualizacja ścieżek użytkownika
+                const userPathsBody = document.querySelector('#userPaths tbody');
+                userPathsBody.innerHTML = stats.userPaths && stats.userPaths.length > 0 
+                    ? stats.userPaths.map(path => `
+                        <tr>
+                            <td class="py-1">${path.path || 'Brak ścieżki'}</td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td class="py-1 text-center">Brak danych</td></tr>';
+
+            } catch (error) {
+                console.error('Błąd podczas ładowania statystyk:', error);
+            }
+        }
+
+        // Załaduj statystyki po wczytaniu strony
+        window.onload = loadStats;
+    </script>
+</body>
+</html>

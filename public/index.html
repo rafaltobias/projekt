@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wypożyczalnia Samochodów - SpeedRent</title>
+    <link href="css/output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Nawigacja -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SpeedRent</h1>
+            <ul class="flex space-x-6">
+                <li><a href="#oferta" class="hover:underline">Oferta</a></li>
+                <li><a href="#cennik" class="hover:underline">Cennik</a></li>
+                <li><a href="kontakt.html" class="hover:underline">Kontakt</a></li>
+            </ul>
+        </div>
+    </nav>
+    <script>
+        // Funkcja wysyłająca dane śledzenia
+        async function trackPageVisit() {
+            const sessionId = localStorage.getItem('sessionId') || Math.random().toString(36).substring(2);
+            localStorage.setItem('sessionId', sessionId); // Zachowaj sesję w localStorage
+    
+            const trackData = {
+                page_url: window.location.href, // Aktualny URL strony
+                referrer: document.referrer || '', // Skąd użytkownik przyszedł
+                session_id: sessionId // Unikalny identyfikator sesji
+            };
+    
+            try {
+                const response = await fetch('/track', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(trackData)
+                });
+                if (!response.ok) {
+                    console.error('Błąd śledzenia:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Błąd wysyłania danych śledzenia:', error);
+            }
+        }
+    
+        // Wywołaj funkcję po załadowaniu strony
+        window.onload = trackPageVisit;
+    </script>
+    <!-- Sekcja powitalna -->
+    <header class="bg-blue-800 text-white text-center py-16">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold mb-4">Wypożyczalnia Samochodów SpeedRent</h2>
+            <p class="text-xl">Wynajmij auto szybko i bez zbędnych formalności!</p>
+        </div>
+    </header>
+
+    <!-- Oferta -->
+    <section id="oferta" class="py-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-8">Nasza Oferta</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Toyota Corolla</h4>
+                    <p class="text-gray-600">Kompaktowe auto idealne do miasta.</p>
+                    <a href="samochod1.html" class="text-blue-600 hover:underline">Szczegóły</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Ford Transit</h4>
+                    <p class="text-gray-600">Pojazd dostawczy na każdą potrzebę.</p>
+                    <a href="samochod2.html" class="text-blue-600 hover:underline">Szczegóły</a>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">BMW X5</h4>
+                    <p class="text-gray-600">Luksusowy SUV dla wymagających.</p>
+                    <a href="samochod3.html" class="text-blue-600 hover:underline">Szczegóły</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cennik -->
+    <section id="cennik" class="bg-gray-200 py-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-8">Cennik</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Osobowe</h4>
+                    <p class="text-gray-600">Od 99 zł / dzień</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Dostawcze</h4>
+                    <p class="text-gray-600">Od 150 zł / dzień</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-2">Premium</h4>
+                    <p class="text-gray-600">Od 250 zł / dzień</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stopka -->
+    <footer class="bg-blue-600 text-white text-center p-4">
+        <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>

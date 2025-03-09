@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMW X5 - SpeedRent</title>
+    <link href="css/output.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Nawigacja -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">SpeedRent</h1>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:underline">Strona Główna</a></li>
+                <li><a href="kontakt.html" class="hover:underline">Kontakt</a></li>
+            </ul>
+        </div>
+    </nav>
+    <script>
+        // Funkcja wysyłająca dane śledzenia
+        async function trackPageVisit() {
+            const sessionId = localStorage.getItem('sessionId') || Math.random().toString(36).substring(2);
+            localStorage.setItem('sessionId', sessionId); // Zachowaj sesję w localStorage
+    
+            const trackData = {
+                page_url: window.location.href, // Aktualny URL strony
+                referrer: document.referrer || '', // Skąd użytkownik przyszedł
+                session_id: sessionId // Unikalny identyfikator sesji
+            };
+    
+            try {
+                const response = await fetch('/track', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(trackData)
+                });
+                if (!response.ok) {
+                    console.error('Błąd śledzenia:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Błąd wysyłania danych śledzenia:', error);
+            }
+        }
+    
+        // Wywołaj funkcję po załadowaniu strony
+        window.onload = trackPageVisit;
+    </script>
+    <!-- Szczegóły samochodu -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">BMW X5</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                <h3 class="text-xl font-semibold mb-4">Specyfikacja</h3>
+                <p class="text-gray-600 mb-2">Typ: Samochód premium</p>
+                <p class="text-gray-600 mb-2">Silnik: 3.0 benzyna</p>
+                <p class="text-gray-600 mb-2">Miejsca: 5</p>
+                <p class="text-gray-600 mb-2">Cena: 250 zł / dzień</p>
+                <p class="text-gray-600">Luksusowy SUV na specjalne okazje i komfortowe podróże.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stopka -->
+    <footer class="bg-blue-600 text-white text-center p-4">
+        <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
+    </footer>
+</body>
+</html>
