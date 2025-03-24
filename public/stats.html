@@ -58,7 +58,12 @@
                     <div id="browsersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
             </div>
- 
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
+                    <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+                </div>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Strony wejściowe</h4>
@@ -84,6 +89,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
+                
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Ścieżki użytkownika</h4>
                     <table class="w-full text-gray-600" id="userPaths">
@@ -94,16 +100,7 @@
                         </thead>
                         <tbody></tbody>
                     </table>
-                </div>
-            </div>
-             
-            <!-- Sekcja statystyk krajów -->
-            <div class="grid grid-cols-1 gap-6 mt-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
-                    <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
-                </div>
-            </div>
+                </div>        
         </div>
     </section>
  

@@ -3,8 +3,6 @@ async function loadStats() {
         const response = await fetch('/api/stats');
         const stats = await response.json();
 
-        console.log('Dane z serwera:', stats);
-
         // Aktualizacja danych ogólnych
         document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
         document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
