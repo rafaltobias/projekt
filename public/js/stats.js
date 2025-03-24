@@ -1,132 +1,48 @@
-async function loadStats() {
+document.addEventListener("DOMContentLoaded", async () => {
     try {
         const response = await fetch('/api/stats');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const stats = await response.json();
 
-        console.log('Dane z serwera:', stats);
+        console.log('Stats data:', stats); // Log the stats data
 
-        // Aktualizacja danych ogólnych
-        document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
-        document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
-
-        // Aktualizacja najpopularniejszych stron i utworzenie wykresu
-        const topPagesBody = document.querySelector('#topPages tbody');
-        if (stats.topPages && stats.topPages.length > 0) {
-            // Tworzenie wykresu Plotly
-            const pages = stats.topPages.map(page => page.page_url);
-            const visits = stats.topPages.map(page => page.count);
-
-            const chartData = [{
-                x: pages,
-                y: visits,
-                type: 'bar',
-                marker: {
-                    color: '#3B82F6'
-                }
-            }];
-
-            const layout = {
-                title: 'Liczba odwiedzin stron',
-                font: {
-                    family: 'system-ui, -apple-system, sans-serif'
-                },
-                xaxis: {
-                    title: 'Strona',
-                    tickangle: -45
-                },
-                yaxis: {
-                    title: 'Liczba odwiedzin'
-                },
-                margin: {
-                    b: 100
-                }
-            };
-
-            const config = {
-                responsive: true,
-                displayModeBar: false
-            };
-
-            Plotly.newPlot('topPagesChart', chartData, layout, config);
-        } else {
-            document.getElementById('topPagesChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+        if (!stats) {
+            throw new Error('Stats object is undefined');
         }
 
-        // Aktualizacja źródeł odwiedzin
-        const referrersBody = document.querySelector('#referrers tbody');
-        referrersBody.innerHTML = stats.referrers && stats.referrers.length > 0 
-            ? stats.referrers.map(ref => `
-                <tr>
-                    <td class="py-1">${ref.referrer || 'Bezpośrednie'}</td>
-                    <td class="py-1 text-right">${ref.count}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+        document.getElementById('totalVisits').textContent = stats.totalVisits || 'N/A';
+        document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'N/A';
 
-        // Aktualizacja przeglądarek
-        const browsersBody = document.querySelector('#browsers tbody');
-        browsersBody.innerHTML = stats.browsers && stats.browsers.length > 0 
-            ? stats.browsers.map(browser => `
-                <tr>
-                    <td class="py-1">${browser.browser || 'Nieznana'}</td>
-                    <td class="py-1 text-right">${browser.count}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+        populateTable('topPages', stats.topPages, ['page_url', 'count']);
+        populateTable('referrers', stats.referrers, ['referrer', 'count']);
+        populateTable('browsers', stats.browsers, ['browser', 'count']);
+        populateTable('entryPages', stats.entryPages, ['page_url', 'count']);
+        populateTable('exitPages', stats.exitPages, ['page_url', 'count']);
+        populateTable('countryStats', stats.countryStats, ['country', 'count', null]);
 
-        // Aktualizacja stron wejściowych
-        const entryPagesBody = document.querySelector('#entryPages tbody');
-        entryPagesBody.innerHTML = stats.entryPages && stats.entryPages.length > 0 
-            ? stats.entryPages.map(page => `
-                <tr>
-                    <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                    <td class="py-1 text-right">${page.count}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-        // Aktualizacja stron wyjściowych
-        const exitPagesBody = document.querySelector('#exitPages tbody');
-        exitPagesBody.innerHTML = stats.exitPages && stats.exitPages.length > 0 
-            ? stats.exitPages.map(page => `
-                <tr>
-                    <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                    <td class="py-1 text-right">${page.count}</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-        // Aktualizacja ścieżek użytkownika
-        const userPathsBody = document.querySelector('#userPaths tbody');
-        userPathsBody.innerHTML = stats.userPaths && stats.userPaths.length > 0 
-            ? stats.userPaths.map(path => `
-                <tr>
-                    <td class="py-1">${path.path || 'Brak ścieżki'}</td>
-                </tr>
-            `).join('')
-            : '<tr><td class="py-1 text-center">Brak danych</td></tr>';
-
-        // Aktualizacja statystyk krajów
-        const countryStatsBody = document.querySelector('#countryStats tbody');
-        countryStatsBody.innerHTML = stats.countryStats && stats.countryStats.length > 0 
-            ? stats.countryStats.map(country => `
-                <tr>
-                    <td class="py-1">${country.name || 'Nieznany'}</td>
-                    <td class="py-1 text-right">${country.visits}</td>
-                    <td class="py-1 text-right">${(country.percentage * 100).toFixed(1)}%</td>
-                </tr>
-            `).join('')
-            : '<tr><td colspan="3" class="py-1 text-center">Brak danych</td></tr>';
-
-    } catch (error) {
-        console.error('Błąd podczas ładowania statystyk:', error);
+    } catch (err) {
+        console.error('Error fetching stats:', err);
     }
-}
-
-// Załaduj statystyki po wczytaniu strony
-window.onload = loadStats;
-
-// Obsługa zmiany rozmiaru okna dla responsywności wykresu
-window.addEventListener('resize', function() {
-    Plotly.Plots.resize('topPagesChart');
 });
+
+function populateTable(tableId, data, columns) {
+    if (!data || !Array.isArray(data)) {
+        console.error(`Invalid data for table ${tableId}:`, data);
+        return;
+    }
+
+    const tbody = document.getElementById(tableId).querySelector('tbody');
+    tbody.innerHTML = '';
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        columns.forEach(col => {
+            const td = document.createElement('td');
+            td.textContent = row[col] || 'N/A';
+            td.className = col === 'count' ? 'text-right' : 'text-left';
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+}
