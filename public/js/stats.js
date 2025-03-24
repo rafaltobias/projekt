@@ -12,14 +12,6 @@ async function loadStats() {
         // Aktualizacja najpopularniejszych stron i utworzenie wykresu
         const topPagesBody = document.querySelector('#topPages tbody');
         if (stats.topPages && stats.topPages.length > 0) {
-            // Aktualizacja tabeli
-            topPagesBody.innerHTML = stats.topPages.map(page => `
-                <tr>
-                    <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                    <td class="py-1 text-right">${page.count}</td>
-                </tr>
-            `).join('');
-
             // Tworzenie wykresu Plotly
             const pages = stats.topPages.map(page => page.page_url);
             const visits = stats.topPages.map(page => page.count);
@@ -57,7 +49,6 @@ async function loadStats() {
 
             Plotly.newPlot('topPagesChart', chartData, layout, config);
         } else {
-            topPagesBody.innerHTML = '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
             document.getElementById('topPagesChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
         }
 
