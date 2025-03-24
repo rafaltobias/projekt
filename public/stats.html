@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statystyki - SpeedRent</title>
     <link href="css/output.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/js/stats.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <!-- Nawigacja -->
@@ -45,7 +47,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Najpopularniejsze strony</h4>
-                    <table class="w-full text-gray-600" id="topPages">
+                    <table class="w-full text-gray-600 mb-4" id="topPages">
                         <thead>
                             <tr>
                                 <th class="text-left pb-2">Strona</th>
@@ -54,6 +56,7 @@
                         </thead>
                         <tbody></tbody>
                     </table>
+                    <div id="topPagesChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Źródła odwiedzin</h4>
@@ -118,6 +121,23 @@
                     </table>
                 </div>
             </div>
+            
+            <!-- Sekcja statystyk krajów -->
+            <div class="grid grid-cols-1 gap-6 mt-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
+                    <table class="w-full text-gray-600" id="countryStats">
+                        <thead>
+                            <tr>
+                                <th class="text-left pb-2">Kraj</th>
+                                <th class="text-right pb-2">Liczba odwiedzin</th>
+                                <th class="text-right pb-2">Procent całości</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -125,91 +145,5 @@
     <footer class="bg-blue-600 text-white text-center p-4">
         <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
     </footer>
-
-    <script>
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/stats');
-                const stats = await response.json();
-
-                console.log('Dane z serwera:', stats); // Logowanie danych dla debugowania
-
-                // Aktualizacja danych ogólnych
-                document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
-                document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
-
-                // Aktualizacja najpopularniejszych stron
-                const topPagesBody = document.querySelector('#topPages tbody');
-                topPagesBody.innerHTML = stats.topPages && stats.topPages.length > 0 
-                    ? stats.topPages.map(page => `
-                        <tr>
-                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                            <td class="py-1 text-right">${page.count}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-                // Aktualizacja źródeł odwiedzin
-                const referrersBody = document.querySelector('#referrers tbody');
-                referrersBody.innerHTML = stats.referrers && stats.referrers.length > 0 
-                    ? stats.referrers.map(ref => `
-                        <tr>
-                            <td class="py-1">${ref.referrer || 'Bezpośrednie'}</td>
-                            <td class="py-1 text-right">${ref.count}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-                // Aktualizacja przeglądarek
-                const browsersBody = document.querySelector('#browsers tbody');
-                browsersBody.innerHTML = stats.browsers && stats.browsers.length > 0 
-                    ? stats.browsers.map(browser => `
-                        <tr>
-                            <td class="py-1">${browser.browser || 'Nieznana'}</td>
-                            <td class="py-1 text-right">${browser.count}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-                // Aktualizacja stron wejściowych
-                const entryPagesBody = document.querySelector('#entryPages tbody');
-                entryPagesBody.innerHTML = stats.entryPages && stats.entryPages.length > 0 
-                    ? stats.entryPages.map(page => `
-                        <tr>
-                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                            <td class="py-1 text-right">${page.count}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-                // Aktualizacja stron wyjściowych
-                const exitPagesBody = document.querySelector('#exitPages tbody');
-                exitPagesBody.innerHTML = stats.exitPages && stats.exitPages.length > 0 
-                    ? stats.exitPages.map(page => `
-                        <tr>
-                            <td class="py-1">${page.page_url || 'Nieznana'}</td>
-                            <td class="py-1 text-right">${page.count}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
-
-                // Aktualizacja ścieżek użytkownika
-                const userPathsBody = document.querySelector('#userPaths tbody');
-                userPathsBody.innerHTML = stats.userPaths && stats.userPaths.length > 0 
-                    ? stats.userPaths.map(path => `
-                        <tr>
-                            <td class="py-1">${path.path || 'Brak ścieżki'}</td>
-                        </tr>
-                    `).join('')
-                    : '<tr><td class="py-1 text-center">Brak danych</td></tr>';
-
-            } catch (error) {
-                console.error('Błąd podczas ładowania statystyk:', error);
-            }
-        }
-
-        // Załaduj statystyki po wczytaniu strony
-        window.onload = loadStats;
-    </script>
 </body>
 </html>
