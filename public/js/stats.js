@@ -1,48 +1,187 @@
-document.addEventListener("DOMContentLoaded", async () => {
+async function loadStats() {
     try {
         const response = await fetch('/api/stats');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const stats = await response.json();
 
-        console.log('Stats data:', stats); // Log the stats data
+        console.log('Dane z serwera:', stats);
 
-        if (!stats) {
-            throw new Error('Stats object is undefined');
+        // Aktualizacja danych ogólnych
+        document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
+        document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
+
+        // Aktualizacja najpopularniejszych stron i utworzenie wykresu
+        if (stats.topPages && stats.topPages.length > 0) {
+            // Tworzenie wykresu Plotly dla najpopularniejszych stron
+            const pages = stats.topPages.map(page => page.page_url);
+            const visits = stats.topPages.map(page => page.count);
+
+            const chartData = [{
+                x: pages,
+                y: visits,
+                type: 'bar',
+                marker: {
+                    color: '#3B82F6'
+                }
+            }];
+
+            const layout = {
+                title: 'Liczba odwiedzin stron',
+                font: {
+                    family: 'system-ui, -apple-system, sans-serif'
+                },
+                xaxis: {
+                    title: 'Strona',
+                    tickangle: -45
+                },
+                yaxis: {
+                    title: 'Liczba odwiedzin'
+                },
+                margin: {
+                    b: 100
+                }
+            };
+
+            const config = {
+                responsive: true,
+                displayModeBar: false
+            };
+
+            Plotly.newPlot('topPagesChart', chartData, layout, config);
+        } else {
+            document.getElementById('topPagesChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
         }
 
-        document.getElementById('totalVisits').textContent = stats.totalVisits || 'N/A';
-        document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'N/A';
+        // Aktualizacja źródeł odwiedzin i utworzenie wykresu
+        if (stats.referrers && stats.referrers.length > 0) {
+            const sources = stats.referrers.map(ref => ref.referrer || 'Bezpośrednie');
+            const sourceVisits = stats.referrers.map(ref => ref.count);
 
-        populateTable('topPages', stats.topPages, ['page_url', 'count']);
-        populateTable('referrers', stats.referrers, ['referrer', 'count']);
-        populateTable('browsers', stats.browsers, ['browser', 'count']);
-        populateTable('entryPages', stats.entryPages, ['page_url', 'count']);
-        populateTable('exitPages', stats.exitPages, ['page_url', 'count']);
-        populateTable('countryStats', stats.countryStats, ['country', 'count', null]);
+            const referrerData = [{
+                labels: sources,
+                values: sourceVisits,
+                type: 'pie'
+            }];
 
-    } catch (err) {
-        console.error('Error fetching stats:', err);
+            const referrerLayout = {
+                title: 'Źródła odwiedzin',
+                font: {
+                    family: 'system-ui, -apple-system, sans-serif'
+                }
+            };
+
+            Plotly.newPlot('referrersChart', referrerData, referrerLayout);
+        } else {
+            document.getElementById('referrersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+        }
+
+        // Aktualizacja przeglądarek i utworzenie wykresu
+        if (stats.browsers && stats.browsers.length > 0) {
+            const browsers = stats.browsers.map(browser => browser.browser || 'Nieznana');
+            const browserVisits = stats.browsers.map(browser => browser.count);
+
+            const browserData = [{
+                labels: browsers,
+                values: browserVisits,
+                type: 'pie'
+            }];
+
+            const browserLayout = {
+                title: 'Przeglądarki',
+                font: {
+                    family: 'system-ui, -apple-system, sans-serif'
+                }
+            };
+
+            Plotly.newPlot('browsersChart', browserData, browserLayout);
+        } else {
+            document.getElementById('browsersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+        }
+
+        // Aktualizacja statystyk krajów i utworzenie wykresu
+        if (stats.countryStats && stats.countryStats.length > 0) {
+            const countries = stats.countryStats.map(country => country.name || 'Nieznany');
+            const countryVisits = stats.countryStats.map(country => country.visits);
+
+            const countryData = [{
+                x: countries,
+                y: countryVisits,
+                type: 'bar',
+                marker: {
+                    color: '#3B82F6'
+                }
+            }];
+
+            const countryLayout = {
+                title: 'Odwiedziny według krajów',
+                font: {
+                    family: 'system-ui, -apple-system, sans-serif'
+                },
+                xaxis: {
+                    title: 'Kraj',
+                    tickangle: -45
+                },
+                yaxis: {
+                    title: 'Liczba odwiedzin'
+                },
+                margin: {
+                    b: 100
+                }
+            };
+
+            const countryConfig = {
+                responsive: true,
+                displayModeBar: false
+            };
+
+            Plotly.newPlot('countryStatsChart', countryData, countryLayout, countryConfig);
+        } else {
+            document.getElementById('countryStatsChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+        }
+
+        // Aktualizacja stron wejściowych
+        const entryPagesBody = document.querySelector('#entryPages tbody');
+        entryPagesBody.innerHTML = stats.entryPages && stats.entryPages.length > 0 
+            ? stats.entryPages.map(page => `
+                <tr>
+                    <td class="py-1">${page.page_url || 'Nieznana'}</td>
+                    <td class="py-1 text-right">${page.count}</td>
+                </tr>
+            `).join('')
+            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+        // Aktualizacja stron wyjściowych
+        const exitPagesBody = document.querySelector('#exitPages tbody');
+        exitPagesBody.innerHTML = stats.exitPages && stats.exitPages.length > 0 
+            ? stats.exitPages.map(page => `
+                <tr>
+                    <td class="py-1">${page.page_url || 'Nieznana'}</td>
+                    <td class="py-1 text-right">${page.count}</td>
+                </tr>
+            `).join('')
+            : '<tr><td colspan="2" class="py-1 text-center">Brak danych</td></tr>';
+
+        // Aktualizacja ścieżek użytkownika
+        const userPathsBody = document.querySelector('#userPaths tbody');
+        userPathsBody.innerHTML = stats.userPaths && stats.userPaths.length > 0 
+            ? stats.userPaths.map(path => `
+                <tr>
+                    <td class="py-1">${path.path || 'Brak ścieżki'}</td>
+                </tr>
+            `).join('')
+            : '<tr><td class="py-1 text-center">Brak danych</td></tr>';
+
+    } catch (error) {
+        console.error('Błąd podczas ładowania statystyk:', error);
     }
-});
-
-function populateTable(tableId, data, columns) {
-    if (!data || !Array.isArray(data)) {
-        console.error(`Invalid data for table ${tableId}:`, data);
-        return;
-    }
-
-    const tbody = document.getElementById(tableId).querySelector('tbody');
-    tbody.innerHTML = '';
-    data.forEach(row => {
-        const tr = document.createElement('tr');
-        columns.forEach(col => {
-            const td = document.createElement('td');
-            td.textContent = row[col] || 'N/A';
-            td.className = col === 'count' ? 'text-right' : 'text-left';
-            tr.appendChild(td);
-        });
-        tbody.appendChild(tr);
-    });
 }
+
+// Załaduj statystyki po wczytaniu strony
+window.onload = loadStats;
+
+// Obsługa zmiany rozmiaru okna dla responsywności wykresu
+window.addEventListener('resize', function() {
+    Plotly.Plots.resize('topPagesChart');
+    Plotly.Plots.resize('referrersChart');
+    Plotly.Plots.resize('browsersChart');
+    Plotly.Plots.resize('countryStatsChart');
+});

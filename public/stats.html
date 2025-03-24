@@ -20,7 +20,7 @@
             </ul>
         </div>
     </nav>
-
+ 
     <!-- Sekcja powitalna -->
     <header class="bg-blue-800 text-white text-center py-16">
         <div class="container mx-auto">
@@ -28,7 +28,7 @@
             <p class="text-xl">Sprawdź jak użytkownicy korzystają z naszej strony</p>
         </div>
     </header>
-
+ 
     <!-- Sekcja statystyk -->
     <section id="stats" class="py-12">
         <div class="container mx-auto px-4">
@@ -43,47 +43,23 @@
                     <p class="text-gray-600 text-lg" id="uniqueVisitors">Ładowanie...</p>
                 </div>
             </div>
-
+ 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Najpopularniejsze strony</h4>
-                    <table class="w-full text-gray-600 mb-4" id="topPages">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Strona</th>
-                                <th class="text-right pb-2">Odwiedziny</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div id="topPagesChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Źródła odwiedzin</h4>
-                    <table class="w-full text-gray-600" id="referrers">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Źródło</th>
-                                <th class="text-right pb-2">Odwiedziny</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div id="referrersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Przeglądarki</h4>
-                    <table class="w-full text-gray-600" id="browsers">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Przeglądarka</th>
-                                <th class="text-right pb-2">Odwiedziny</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div id="browsersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+ 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Strony wejściowe</h4>
                     <table class="w-full text-gray-600" id="entryPages">
@@ -109,22 +85,28 @@
                     </table>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
-                    <table class="w-full text-gray-600" id="countryStats">
+                    <h4 class="text-xl font-semibold mb-4">Ścieżki użytkownika</h4>
+                    <table class="w-full text-gray-600" id="userPaths">
                         <thead>
                             <tr>
-                                <th class="text-left pb-2">Kraj</th>
-                                <th class="text-right pb-2">Liczba odwiedzin</th>
-                                <th class="text-right pb-2">Procent całości</th>
+                                <th class="text-left pb-2">Ścieżka</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
             </div>
+             
+            <!-- Sekcja statystyk krajów -->
+            <div class="grid grid-cols-1 gap-6 mt-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
+                    <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+                </div>
+            </div>
         </div>
     </section>
-
+ 
     <!-- Stopka -->
     <footer class="bg-blue-600 text-white text-center p-4">
         <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
