@@ -1,12 +1,13 @@
 const UAParser = require('ua-parser-js');
 const visitModel = require('../models/visitModel');
+const crypto = require('crypto');
 
 exports.trackVisit = async (req, res) => {
     try {
         const parser = new UAParser(req.headers['user-agent']);
         const uaResult = parser.getResult();
 
-        const sessionId = req.body.session_id || Math.random().toString(36).substring(2);
+        const sessionId = req.body.session_id || generateSecureRandomString();
         const visitData = {
             page_url: req.body.page_url,
             referrer: req.body.referrer || req.headers.referer || '',
@@ -46,3 +47,9 @@ exports.trackVisit = async (req, res) => {
         });
     }
 };
+
+function generateSecureRandomString() {
+    const array = new Uint32Array(10);
+    crypto.randomFillSync(array);
+    return Array.from(array, dec => ('0' + dec.toString(36)).substr(-2)).join('');
+}
