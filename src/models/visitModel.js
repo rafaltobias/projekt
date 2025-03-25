@@ -32,12 +32,53 @@ exports.updatePreviousExitPage = async (sessionId, newVisitId) => {
 };
 
 exports.getVisitTimes = async () => {
-    return await db.query(`
+    const now = new Date();
+    
+    // Get last 24 hours data (1d)
+    const hourlyData = await db.query(`
         SELECT 
-            DATE_TRUNC('day', timestamp) AS period, 
-            COUNT(*) AS count 
+            TO_CHAR(DATE_TRUNC('hour', timestamp), 'HH24:00') as period,
+            COUNT(*) as count
         FROM visits 
-        GROUP BY period 
-        ORDER BY period DESC
+        WHERE timestamp >= NOW() - INTERVAL '24 hours'
+        GROUP BY DATE_TRUNC('hour', timestamp)
+        ORDER BY DATE_TRUNC('hour', timestamp)
+    `);
+
+    // Get last 7 days data (7d)
+    const dailyData = await db.query(`
+        SELECT 
+            TO_CHAR(DATE_TRUNC('day', timestamp), 'Day') as period,
+            COUNT(*) as count
+        FROM visits 
+        WHERE timestamp >= NOW() - INTERVAL '7 days'
+        GROUP BY DATE_TRUNC('day', timestamp), TO_CHAR(DATE_TRUNC('day', timestamp), 'Day')
+        ORDER BY DATE_TRUNC('day', timestamp)
+    `);
+
+    // Get last 30 days data grouped by week (30d)
+    const weeklyData = await db.query(`
+        SELECT 
+            CONCAT('Tydzień ', TO_CHAR(DATE_TRUNC('week', timestamp), 'WW')) as period,
+            COUNT(*) as count
+        FROM visits 
+        WHERE timestamp >= NOW() - INTERVAL '30 days'
+        GROUP BY DATE_TRUNC('week', timestamp)
+        ORDER BY DATE_TRUNC('week', timestamp)
+    `);
+
+    return {
+        '1d': hourlyData.rows,
+        '7d': dailyData.rows,
+        '30d': weeklyData.rows
+    };
+};
+
+exports.getRecentVisits = async () => {
+    return await db.query(`
+        SELECT timestamp 
+        FROM visits 
+        WHERE timestamp >= NOW() - INTERVAL '30 days'
+        ORDER BY timestamp DESC
     `);
 };

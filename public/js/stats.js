@@ -1,211 +1,231 @@
+function processTimestamps(timestamps, period) {
+    const now = new Date();
+    const results = new Map();
+    
+    switch(period) {
+        case '1d':
+            // Initialize all 24 hours first
+            for (let i = 0; i < 24; i++) {
+                const hour = i.toString().padStart(2, '0') + ':00';
+                results.set(hour, 0);
+            }
+            
+            // Count visits
+            timestamps.forEach(timestamp => {
+                const date = new Date(timestamp);
+                if (now - date <= 24 * 60 * 60 * 1000) {
+                    const hour = date.getHours().toString().padStart(2, '0') + ':00';
+                    results.set(hour, (results.get(hour) || 0) + 1);
+                }
+            });
+            break;
+            
+        case '7d':
+            // Initialize all days first (starting from Monday)
+            const daysOrdered = [
+                'Poniedziałek', 
+                'Wtorek', 
+                'Środa', 
+                'Czwartek', 
+                'Piątek', 
+                'Sobota', 
+                'Niedziela'
+            ];
+            
+            daysOrdered.forEach(day => {
+                results.set(day, 0);
+            });
+            
+            // Count visits
+            timestamps.forEach(timestamp => {
+                const date = new Date(timestamp);
+                if (now - date <= 7 * 24 * 60 * 60 * 1000) {
+                    // Convert Sunday (0) to 6 for proper indexing
+                    let dayIndex = date.getDay() - 1;
+                    if (dayIndex === -1) dayIndex = 6;
+                    const day = daysOrdered[dayIndex];
+                    results.set(day, (results.get(day) || 0) + 1);
+                }
+            });
+            break;
+            
+        case '30d':
+            // Initialize 4-5 weeks
+            for (let i = 0; i >= 0; i--) {
+                const weekLabel = `Tydzień ${i + 1}`;
+                results.set(weekLabel, 0);
+            }
+            
+            // Count visits
+            timestamps.forEach(timestamp => {
+                const date = new Date(timestamp);
+                if (now - date <= 30 * 24 * 60 * 60 * 1000) {
+                    const weekNumber = Math.ceil((now - date) / (7 * 24 * 60 * 60 * 1000));
+                    const weekLabel = `Tydzień ${weekNumber}`;
+                    if (weekNumber <= 5) {  // Only count up to 5 weeks
+                        results.set(weekLabel, (results.get(weekLabel) || 0) + 1);
+                    }
+                }
+            });
+            break;
+    }
+    
+    // Convert Map to array and sort properly
+    return Array.from(results).map(([period, count]) => ({ period, count }));
+}
+
 async function loadStats() {
     try {
         const response = await fetch('/api/stats');
         const stats = await response.json();
+        console.log('Stats data:', stats);
 
-        // Updating general data
+        // Common chart configuration
+        const commonConfig = {
+            responsive: true,
+            displayModeBar: false,
+            displaylogo: false
+        };
+
+        // Update general stats
         document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
         document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
 
-        // Update top pages chart
-        if (stats.topPages && stats.topPages.length > 0) {
-            const pages = stats.topPages.map(page => page.page_url);
-            const visits = stats.topPages.map(page => page.count);
+        // Helper function to create bar chart
+        function createBarChart(data, containerId, title, xAxisTitle, yAxisTitle, color = '#3B82F6') {
+            if (!data || !data.length) {
+                document.getElementById(containerId).innerHTML = 
+                    '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+                return;
+            }
 
             const chartData = [{
-                x: pages,
-                y: visits,
+                x: data.map(item => item.page_url || item.country || item.period),
+                y: data.map(item => item.count || item.visits),
                 type: 'bar',
-                marker: {
-                    color: '#3B82F6'
-                }
+                marker: { color: color }
             }];
 
             const layout = {
-                title: 'Liczba odwiedzin stron',
-                font: {
-                    family: 'system-ui, -apple-system, sans-serif'
-                },
+                title: title,
+                font: { family: 'system-ui, -apple-system, sans-serif' },
                 xaxis: {
-                    title: 'Strona',
-                    tickangle: -45
+                    title: xAxisTitle,
+                    tickangle: -45,
+                    tickmode: containerId === 'visitTimeChart' ? 'array' : 'auto',
+                    ticktext: containerId === 'visitTimeChart' ? data.map(item => item.period) : undefined,
+                    tickvals: containerId === 'visitTimeChart' ? data.map((_, i) => i) : undefined
                 },
                 yaxis: {
-                    title: 'Liczba odwiedzin'
+                    title: yAxisTitle
                 },
-                margin: {
-                    b: 100
-                }
+                margin: { b: 100 }
             };
 
-            const config = {
-                responsive: true,
-                displayModeBar: false,
-                displaylogo: false // Remove Plotly watermark
-            };
-
-            Plotly.newPlot('topPagesChart', chartData, layout, config);
-        } else {
-            document.getElementById('topPagesChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+            Plotly.newPlot(containerId, chartData, layout, commonConfig);
         }
 
-        // Update referrers chart
-        if (stats.referrers && stats.referrers.length > 0) {
-            const sources = stats.referrers.map(ref => ref.referrer || 'Bezpośrednie');
-            const sourceVisits = stats.referrers.map(ref => ref.count);
+        // Helper function to create pie chart
+        function createPieChart(data, containerId, title, defaultLabel = 'Nieznane') {
+            if (!data || !data.length) {
+                document.getElementById(containerId).innerHTML = 
+                    '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+                return;
+            }
 
-            const referrerData = [{
-                labels: sources,
-                values: sourceVisits,
+            const chartData = [{
+                labels: data.map(item => item.referrer || item.browser || defaultLabel),
+                values: data.map(item => item.count),
                 type: 'pie'
             }];
 
-            const referrerLayout = {
-                title: 'Źródła odwiedzin',
-                font: {
-                    family: 'system-ui, -apple-system, sans-serif'
-                }
+            const layout = {
+                title: title,
+                font: { family: 'system-ui, -apple-system, sans-serif' }
             };
 
-            const referrerConfig = {
-                responsive: true,
-                displayModeBar: false,
-                displaylogo: false // Remove Plotly watermark
-            };
-
-            Plotly.newPlot('referrersChart', referrerData, referrerLayout, referrerConfig);
-        } else {
-            document.getElementById('referrersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+            Plotly.newPlot(containerId, chartData, layout, commonConfig);
         }
 
-        // Update browsers chart
-        if (stats.browsers && stats.browsers.length > 0) {
-            const browsers = stats.browsers.map(browser => browser.browser || 'Nieznana');
-            const browserVisits = stats.browsers.map(browser => browser.count);
+        // Create charts
+        createBarChart(stats.topPages, 'topPagesChart', 
+            'Liczba odwiedzin stron', 'Strona', 'Liczba odwiedzin');
 
-            const browserData = [{
-                labels: browsers,
-                values: browserVisits,
-                type: 'pie'
-            }];
+        createPieChart(stats.referrers, 'referrersChart', 
+            'Źródła odwiedzin', 'Bezpośrednie');
 
-            const browserLayout = {
-                title: 'Przeglądarki',
-                font: {
-                    family: 'system-ui, -apple-system, sans-serif'
-                }
+        createPieChart(stats.browsers, 'browsersChart', 
+            'Przeglądarki', 'Nieznana');
+
+        createBarChart(stats.countryStats, 'countryStatsChart',
+            'Odwiedziny według krajów', 'Kraj', 'Liczba odwiedzin');
+
+        // Entry and exit pages charts
+        createBarChart(stats.entryPages, 'entryPagesChart',
+            'Strony wejściowe', 'Strona', 'Liczba wejść', '#10B981');
+
+        createBarChart(stats.exitPages, 'exitPagesChart',
+            'Strony wyjściowe', 'Strona', 'Liczba wyjść', '#EF4444');
+
+        // Process timestamps for visit times
+        if (stats.timestamps) {
+            stats.visitTimes = {
+                '1d': processTimestamps(stats.timestamps, '1d'),
+                '7d': processTimestamps(stats.timestamps, '7d'),
+                '30d': processTimestamps(stats.timestamps, '30d')
             };
-
-            const browserConfig = {
-                responsive: true,
-                displayModeBar: false,
-                displaylogo: false // Remove Plotly watermark
-            };
-
-            Plotly.newPlot('browsersChart', browserData, browserLayout, browserConfig);
-        } else {
-            document.getElementById('browsersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
-        }
-
-        // Update country stats chart
-        if (stats.countryStats && stats.countryStats.length > 0) {
-            const countries = stats.countryStats.map(country => country.name || 'Nieznany');
-            const countryVisits = stats.countryStats.map(country => country.visits);
-
-            const countryData = [{
-                x: countries,
-                y: countryVisits,
-                type: 'bar',
-                marker: {
-                    color: '#3B82F6'
-                }
-            }];
-
-            const countryLayout = {
-                title: 'Odwiedziny według krajów',
-                font: {
-                    family: 'system-ui, -apple-system, sans-serif'
-                },
-                xaxis: {
-                    title: 'Kraj',
-                    tickangle: -45
-                },
-                yaxis: {
-                    title: 'Liczba odwiedzin'
-                },
-                margin: {
-                    b: 100
-                }
-            };
-
-            const countryConfig = {
-                responsive: true,
-                displayModeBar: false,
-                displaylogo: false, // Remove Plotly watermark
-                staticPlot: true // Disable zooming and panning
-            };
-
-            Plotly.newPlot('countryStatsChart', countryData, countryLayout, countryConfig);
-        } else {
-            document.getElementById('countryStatsChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
         }
 
         // Function to update visit time chart
         function updateVisitTimeChart(period) {
-            if (stats.visitTimes && stats.visitTimes[period]) {
-                const visitTimes = stats.visitTimes[period];
-                const times = visitTimes.map(vt => vt.period);
-                const counts = visitTimes.map(vt => vt.count);
-
-                const visitTimeData = [{
-                    x: times,
-                    y: counts,
-                    type: 'bar',
-                    marker: {
-                        color: '#3B82F6'
+            // Update button states
+            const buttons = ['btn1d', 'btn7d', 'btn30d'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.classList.remove('bg-blue-800');
+                    btn.classList.add('bg-blue-600');
+                    if (btnId === `btn${period}`) {
+                        btn.classList.remove('bg-blue-600');
+                        btn.classList.add('bg-blue-800');
                     }
-                }];
+                }
+            });
 
-                const visitTimeLayout = {
-                    title: 'Liczba odwiedzin według czasu',
-                    font: {
-                        family: 'system-ui, -apple-system, sans-serif'
-                    },
-                    xaxis: {
-                        title: 'Czas',
-                        tickangle: -45
-                    },
-                    yaxis: {
-                        title: 'Liczba odwiedzin'
-                    },
-                    margin: {
-                        b: 100
-                    }
-                };
-
-                const visitTimeConfig = {
-                    responsive: true,
-                    displayModeBar: false,
-                    displaylogo: false,
-                    staticPlot: true // Disable zooming and panning
-                };
-
-                Plotly.newPlot('visitTimeChart', visitTimeData, visitTimeLayout, visitTimeConfig);
-            } else {
-                document.getElementById('visitTimeChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+            const visitTimes = stats.visitTimes[period];
+            if (!visitTimes || visitTimes.length === 0) {
+                document.getElementById('visitTimeChart').innerHTML = 
+                    `<p class="text-center text-gray-600">Brak danych dla okresu ${period}</p>`;
+                return;
             }
+
+            const periodLabels = {
+                '1d': 'ostatnie 24 godziny',
+                '7d': 'ostatnie 7 dni',
+                '30d': 'ostatnie 30 dni'
+            };
+
+            createBarChart(
+                visitTimes,
+                'visitTimeChart',
+                `Liczba odwiedzin (${periodLabels[period]})`,
+                'Okres',
+                'Liczba odwiedzin'
+            );
         }
 
-        // Initial load for 1-day period
-        updateVisitTimeChart('1d');
-
-        // Event listeners for period buttons
+        // Set up time period button listeners
         document.getElementById('btn1d').addEventListener('click', () => updateVisitTimeChart('1d'));
         document.getElementById('btn7d').addEventListener('click', () => updateVisitTimeChart('7d'));
         document.getElementById('btn30d').addEventListener('click', () => updateVisitTimeChart('30d'));
 
+        // Initial load with 1-day period
+        updateVisitTimeChart('1d');
+
     } catch (error) {
-        console.error('Błąd podczas ładowania statystyk:', error);
+        console.error('Error loading stats:', error);
+        document.getElementById('visitTimeChart').innerHTML = 
+            '<p class="text-center text-gray-600">Wystąpił błąd podczas ładowania danych</p>';
     }
 }
 
@@ -214,9 +234,19 @@ window.onload = loadStats;
 
 // Handle window resize for chart responsiveness
 window.addEventListener('resize', function() {
-    Plotly.Plots.resize('topPagesChart');
-    Plotly.Plots.resize('referrersChart');
-    Plotly.Plots.resize('browsersChart');
-    Plotly.Plots.resize('countryStatsChart');
-    Plotly.Plots.resize('visitTimeChart');
+    const chartIds = [
+        'topPagesChart',
+        'entryPagesChart',
+        'exitPagesChart',
+        'referrersChart',
+        'browsersChart',
+        'countryStatsChart',
+        'visitTimeChart'
+    ];
+    
+    chartIds.forEach(id => {
+        if (document.getElementById(id)) {
+            Plotly.Plots.resize(id);
+        }
+    });
 });

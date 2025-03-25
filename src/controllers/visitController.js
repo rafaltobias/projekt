@@ -18,8 +18,14 @@ exports.trackVisit = async (req, res) => {
             country: req.headers['cf-ipcountry'] || 'Unknown',
             session_id: sessionId,
             is_entry_page: false,
-            is_exit_page: true
+            is_exit_page: true,
+            timestamp: new Date() // Explicitly set the timestamp
         };
+
+        // Validate timestamp
+        if (!visitData.timestamp || isNaN(visitData.timestamp.getTime())) {
+            throw new Error('Invalid timestamp');
+        }
 
         const existingVisit = await visitModel.getFirstVisit(sessionId);
         visitData.is_entry_page = existingVisit.rows.length === 0;
@@ -27,9 +33,16 @@ exports.trackVisit = async (req, res) => {
         const newVisit = await visitModel.insertVisit(visitData);
         await visitModel.updatePreviousExitPage(sessionId, newVisit.rows[0].id);
 
-        res.status(200).send('Tracked');
+        res.status(200).json({
+            status: 'success',
+            message: 'Visit tracked successfully',
+            sessionId: sessionId
+        });
     } catch (err) {
         console.error('Error in tracking:', err);
-        res.status(500).send('Error tracking visit');
+        res.status(500).json({
+            error: 'Error tracking visit',
+            message: err.message
+        });
     }
 };
