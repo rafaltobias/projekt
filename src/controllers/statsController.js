@@ -1,4 +1,5 @@
 const statsModel = require('../models/statsModel');
+const visitModel = require('../models/visitModel');
 const path = require('path');
 
 exports.getStats = async (req, res) => {
@@ -28,6 +29,13 @@ exports.getStats = async (req, res) => {
 
         const countryStats = await statsModel.getCountryStats();
         stats.countryStats = countryStats.rows;
+
+        const visitTimes = await visitModel.getVisitTimes();
+        stats.visitTimes = {
+            '1d': visitTimes.rows.filter(row => row.period === 'day'),
+            '7d': visitTimes.rows.filter(row => row.period === 'week'),
+            '30d': visitTimes.rows.filter(row => row.period === 'month')
+        };
 
         res.status(200).json(stats);
     } catch (err) {

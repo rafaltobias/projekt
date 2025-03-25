@@ -64,43 +64,17 @@
                     <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Strony wejściowe</h4>
-                    <table class="w-full text-gray-600" id="entryPages">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Strona</th>
-                                <th class="text-right pb-2">Wejścia</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według czasu</h4>
+                    <div id="visitTimeChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+                    <div class="flex justify-center mt-4">
+                        <button id="btn1d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">1d</button>
+                        <button id="btn7d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">7d</button>
+                        <button id="btn30d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">30d</button>
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Strony wyjściowe</h4>
-                    <table class="w-full text-gray-600" id="exitPages">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Strona</th>
-                                <th class="text-right pb-2">Wyjścia</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Ścieżki użytkownika</h4>
-                    <table class="w-full text-gray-600" id="userPaths">
-                        <thead>
-                            <tr>
-                                <th class="text-left pb-2">Ścieżka</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>        
+            </div>
         </div>
     </section>
  

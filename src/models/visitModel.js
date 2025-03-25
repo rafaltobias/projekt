@@ -30,3 +30,14 @@ exports.updatePreviousExitPage = async (sessionId, newVisitId) => {
         WHERE session_id = $1 AND id != $2
     `, [sessionId, newVisitId]);
 };
+
+exports.getVisitTimes = async () => {
+    return await db.query(`
+        SELECT 
+            DATE_TRUNC('day', timestamp) AS period, 
+            COUNT(*) AS count 
+        FROM visits 
+        GROUP BY period 
+        ORDER BY period DESC
+    `);
+};

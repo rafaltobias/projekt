@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontakt - SpeedRent</title>
     <link href="css/output.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/track.js"></script>
+
 </head>
 <body class="bg-gray-100 font-sans">
     <!-- Nawigacja -->
@@ -16,37 +18,6 @@
             </ul>
         </div>
     </nav>
-    <script>
-        // Funkcja wysyłająca dane śledzenia
-        async function trackPageVisit() {
-            const sessionId = localStorage.getItem('sessionId') || Math.random().toString(36).substring(2);
-            localStorage.setItem('sessionId', sessionId); // Zachowaj sesję w localStorage
-    
-            const trackData = {
-                page_url: window.location.href, // Aktualny URL strony
-                referrer: document.referrer || '', // Skąd użytkownik przyszedł
-                session_id: sessionId // Unikalny identyfikator sesji
-            };
-    
-            try {
-                const response = await fetch('/track', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(trackData)
-                });
-                if (!response.ok) {
-                    console.error('Błąd śledzenia:', response.statusText);
-                }
-            } catch (error) {
-                console.error('Błąd wysyłania danych śledzenia:', error);
-            }
-        }
-    
-        // Wywołaj funkcję po załadowaniu strony
-        window.onload = trackPageVisit;
-    </script>
     <!-- Kontakt -->
     <section class="py-12">
         <div class="container mx-auto px-4 text-center">
