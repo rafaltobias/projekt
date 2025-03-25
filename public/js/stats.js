@@ -41,7 +41,8 @@ async function loadStats() {
 
             const config = {
                 responsive: true,
-                displayModeBar: false
+                displayModeBar: false,
+                displaylogo: false // Remove Plotly watermark
             };
 
             Plotly.newPlot('topPagesChart', chartData, layout, config);
@@ -67,7 +68,13 @@ async function loadStats() {
                 }
             };
 
-            Plotly.newPlot('referrersChart', referrerData, referrerLayout);
+            const referrerConfig = {
+                responsive: true,
+                displayModeBar: false,
+                displaylogo: false // Remove Plotly watermark
+            };
+
+            Plotly.newPlot('referrersChart', referrerData, referrerLayout, referrerConfig);
         } else {
             document.getElementById('referrersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
         }
@@ -90,7 +97,13 @@ async function loadStats() {
                 }
             };
 
-            Plotly.newPlot('browsersChart', browserData, browserLayout);
+            const browserConfig = {
+                responsive: true,
+                displayModeBar: false,
+                displaylogo: false // Remove Plotly watermark
+            };
+
+            Plotly.newPlot('browsersChart', browserData, browserLayout, browserConfig);
         } else {
             document.getElementById('browsersChart').innerHTML = '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
         }
@@ -128,7 +141,10 @@ async function loadStats() {
 
             const countryConfig = {
                 responsive: true,
-                displayModeBar: false
+                displayModeBar: false,
+                displaylogo: false, // Remove Plotly watermark
+                staticPlot: true // Disable zooming and panning
+
             };
 
             Plotly.newPlot('countryStatsChart', countryData, countryLayout, countryConfig);
