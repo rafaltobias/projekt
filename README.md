@@ -11,3 +11,7 @@ https://www.figma.com/design/jSLK0BpYvanZHbg1Kf4s5m/Untitled?t=u8CqJKOEBKSuImsb-
 odpadaja ciasteczka firm trzecich
 wykresy odnosnie w jaki dzien najczesciej ktos wchodzi z filtrami 1d 7d 30d 365d
 logowanie figma
+TODO:
+export csv
+poprawic geolokalizacje
+naprawic entry/exit page
