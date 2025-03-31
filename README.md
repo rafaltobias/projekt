@@ -15,3 +15,4 @@ TODO:
 export csv
 poprawic geolokalizacje
 naprawic entry/exit page
+opis bibliotek i kodu i w jakim stopniu realizuja te zadania
