@@ -34,7 +34,6 @@ exports.updatePreviousExitPage = async (sessionId, newVisitId) => {
 exports.getVisitTimes = async () => {
     const now = new Date();
     
-    // Get last 24 hours data (1d)
     const hourlyData = await db.query(`
         SELECT 
             TO_CHAR(DATE_TRUNC('hour', timestamp), 'HH24:00') as period,
@@ -45,7 +44,6 @@ exports.getVisitTimes = async () => {
         ORDER BY DATE_TRUNC('hour', timestamp)
     `);
 
-    // Get last 7 days data (7d)
     const dailyData = await db.query(`
         SELECT 
             TO_CHAR(DATE_TRUNC('day', timestamp), 'Day') as period,
@@ -56,7 +54,6 @@ exports.getVisitTimes = async () => {
         ORDER BY DATE_TRUNC('day', timestamp)
     `);
 
-    // Get last 30 days data grouped by week (30d)
     const weeklyData = await db.query(`
         SELECT 
             CONCAT('Tydzień ', TO_CHAR(DATE_TRUNC('week', timestamp), 'WW')) as period,

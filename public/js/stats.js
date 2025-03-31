@@ -4,13 +4,11 @@ function processTimestamps(timestamps, period) {
     
     switch(period) {
         case '1d':
-            // Initialize all 24 hours first
             for (let i = 0; i < 24; i++) {
                 const hour = i.toString().padStart(2, '0') + ':00';
                 results.set(hour, 0);
             }
             
-            // Count visits
             timestamps.forEach(timestamp => {
                 const date = new Date(timestamp);
                 if (now - date <= 24 * 60 * 60 * 1000) {
@@ -21,7 +19,6 @@ function processTimestamps(timestamps, period) {
             break;
             
         case '7d':
-            // Initialize all days first (starting from Monday)
             const daysOrdered = [
                 'Poniedziałek', 
                 'Wtorek', 
@@ -36,11 +33,9 @@ function processTimestamps(timestamps, period) {
                 results.set(day, 0);
             });
             
-            // Count visits
             timestamps.forEach(timestamp => {
                 const date = new Date(timestamp);
                 if (now - date <= 7 * 24 * 60 * 60 * 1000) {
-                    // Convert Sunday (0) to 6 for proper indexing
                     let dayIndex = date.getDay() - 1;
                     if (dayIndex === -1) dayIndex = 6;
                     const day = daysOrdered[dayIndex];
@@ -50,13 +45,11 @@ function processTimestamps(timestamps, period) {
             break;
             
         case '30d':
-            // Initialize 4-5 weeks
             for (let i = 0; i >= 0; i--) {
                 const weekLabel = `Tydzień ${i + 1}`;
                 results.set(weekLabel, 0);
             }
             
-            // Count visits
             timestamps.forEach(timestamp => {
                 const date = new Date(timestamp);
                 if (now - date <= 30 * 24 * 60 * 60 * 1000) {
@@ -70,7 +63,6 @@ function processTimestamps(timestamps, period) {
             break;
     }
     
-    // Convert Map to array and sort properly
     return Array.from(results).map(([period, count]) => ({ period, count }));
 }
 
@@ -80,18 +72,15 @@ async function loadStats() {
         const stats = await response.json();
         console.log('Stats data:', stats);
 
-        // Common chart configuration
         const commonConfig = {
             responsive: true,
             displayModeBar: false,
             displaylogo: false
         };
 
-        // Update general stats
         document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
         document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
 
-        // Helper function to create bar chart
         function createBarChart(data, containerId, title, xAxisTitle, yAxisTitle, color = '#3B82F6') {
             if (!data || !data.length) {
                 document.getElementById(containerId).innerHTML = 
@@ -125,7 +114,6 @@ async function loadStats() {
             Plotly.newPlot(containerId, chartData, layout, commonConfig);
         }
 
-        // Helper function to create pie chart
         function createPieChart(data, containerId, title, defaultLabel = 'Nieznane') {
             if (!data || !data.length) {
                 document.getElementById(containerId).innerHTML = 
@@ -147,7 +135,6 @@ async function loadStats() {
             Plotly.newPlot(containerId, chartData, layout, commonConfig);
         }
 
-        // Create charts
         createBarChart(stats.topPages, 'topPagesChart', 
             'Liczba odwiedzin stron', 'Strona', 'Liczba odwiedzin');
 
@@ -160,14 +147,12 @@ async function loadStats() {
         createBarChart(stats.countryStats, 'countryStatsChart',
             'Odwiedziny według krajów', 'Kraj', 'Liczba odwiedzin');
 
-        // Entry and exit pages charts
         createBarChart(stats.entryPages, 'entryPagesChart',
             'Strony wejściowe', 'Strona', 'Liczba wejść', '#10B981');
 
         createBarChart(stats.exitPages, 'exitPagesChart',
             'Strony wyjściowe', 'Strona', 'Liczba wyjść', '#EF4444');
 
-        // Process timestamps for visit times
         if (stats.timestamps) {
             stats.visitTimes = {
                 '1d': processTimestamps(stats.timestamps, '1d'),
@@ -176,9 +161,7 @@ async function loadStats() {
             };
         }
 
-        // Function to update visit time chart
         function updateVisitTimeChart(period) {
-            // Update button states
             const buttons = ['btn1d', 'btn7d', 'btn30d'];
             buttons.forEach(btnId => {
                 const btn = document.getElementById(btnId);
@@ -214,12 +197,10 @@ async function loadStats() {
             );
         }
 
-        // Set up time period button listeners
         document.getElementById('btn1d').addEventListener('click', () => updateVisitTimeChart('1d'));
         document.getElementById('btn7d').addEventListener('click', () => updateVisitTimeChart('7d'));
         document.getElementById('btn30d').addEventListener('click', () => updateVisitTimeChart('30d'));
 
-        // Initial load with 1-day period
         updateVisitTimeChart('1d');
 
     } catch (error) {
@@ -229,10 +210,8 @@ async function loadStats() {
     }
 }
 
-// Load stats on page load
 window.onload = loadStats;
 
-// Handle window resize for chart responsiveness
 window.addEventListener('resize', function() {
     const chartIds = [
         'topPagesChart',

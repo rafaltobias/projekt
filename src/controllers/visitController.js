@@ -20,10 +20,9 @@ exports.trackVisit = async (req, res) => {
             session_id: sessionId,
             is_entry_page: false,
             is_exit_page: true,
-            timestamp: new Date() // Explicitly set the timestamp
+            timestamp: new Date() 
         };
 
-        // Validate timestamp
         if (!visitData.timestamp || isNaN(visitData.timestamp.getTime())) {
             throw new Error('Invalid timestamp');
         }

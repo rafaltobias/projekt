@@ -6,14 +6,12 @@ exports.getStats = async (req, res) => {
     try {
         const stats = {};
 
-        // Get basic stats
         const totalVisits = await statsModel.getTotalVisits();
         stats.totalVisits = parseInt(totalVisits.rows[0].total);
 
         const uniqueVisitors = await statsModel.getUniqueVisitors();
         stats.uniqueVisitors = parseInt(uniqueVisitors.rows[0].unique_count);
 
-        // Get page statistics
         const topPages = await statsModel.getTopPages();
         stats.topPages = topPages.rows;
 
@@ -32,11 +30,9 @@ exports.getStats = async (req, res) => {
         const countryStats = await statsModel.getCountryStats();
         stats.countryStats = countryStats.rows;
 
-        // Get time-based statistics
         const visitTimes = await visitModel.getVisitTimes();
         stats.visitTimes = visitTimes;
 
-        // Get raw timestamps for debugging
         const recentVisits = await visitModel.getRecentVisits();
         stats.timestamps = recentVisits.rows.map(row => row.timestamp);
 
