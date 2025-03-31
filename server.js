@@ -15,7 +15,6 @@ const limiter = rateLimit({
     max: 100 // limit each IP to 100 requests per windowMs
 });
 
-// Apply rate limiting to all requests
 app.use(limiter);
 
 app.post('/track', visitController.trackVisit);
