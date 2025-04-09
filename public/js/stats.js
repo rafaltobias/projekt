@@ -89,7 +89,7 @@ async function loadStats() {
             const sortedData = data.sort((a, b) => b.count - a.count);
             const topCategories = sortedData.slice(0, 5);
             const otherCategories = sortedData.slice(5);
-            
+
             if (otherCategories.length > 0) {
                 const otherCount = otherCategories.reduce((sum, item) => sum + item.count, 0);
                 topCategories.push({
@@ -182,7 +182,7 @@ async function loadStats() {
                 x: data.map(item => item.period),
                 y: data.map(item => item.count || 0),
                 type: 'scatter',
-                mode: 'lines+markers',
+                mode: 'lines',
                 line: { color: color },
                 connectgaps: true
             }];
