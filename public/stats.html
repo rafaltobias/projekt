@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard</title>
-    <!-- Include Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Tailwind CSS from Local Build -->
+    <link href="/css/output.css" rel="stylesheet">
     <style>
         .card {
             background-color: #fff;
@@ -34,7 +34,6 @@
                 <h1 class="text-lg font-semibold text-gray-800">Analytics Dashboard</h1>
             </a>
         </div>
-
     </header>
 
     <!-- Main Content -->
@@ -65,9 +64,9 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-gray-600">User Activity</h2>
                     <div class="flex space-x-2">
-                        <button id="btn1d" class="px-3 py-1 bg-gray-200 text-gray-600 rounded">Day</button>
-                        <button id="btn7d" class="px-3 py-1 bg-white text-gray-600 rounded">Week</button>
-                        <button id="btn30d" class="px-3 py-1 bg-white text-gray-600 rounded">Month</button>
+                        <button id="btn1d" class="px-3 py-1 bg-gray-200 text-gray-600 rounded focus:bg-blue-500 focus:text-white hover:bg-blue-400 hover:text-white transition">Day</button>
+                        <button id="btn7d" class="px-3 py-1 bg-gray-200 text-gray-600 rounded focus:bg-blue-500 focus:text-white hover:bg-blue-400 hover:text-white transition">Week</button>
+                        <button id="btn30d" class="px-3 py-1 bg-gray-200 text-gray-600 rounded focus:bg-blue-500 focus:text-white hover:bg-blue-400 hover:text-white transition">Month</button>
                     </div>
                 </div>
                 <!-- Placeholder for Graph -->
