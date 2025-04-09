@@ -65,7 +65,24 @@ function processTimestamps(timestamps, period) {
     
     return Array.from(results).map(([period, count]) => ({ period, count }));
 }
+const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
 
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark');
+            darkModeToggle.textContent = 'Wyłącz Tryb Ciemny';
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            if (body.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                darkModeToggle.textContent = 'Wyłącz Tryb Ciemny';
+            } else {
+                localStorage.setItem('theme', 'light');
+                darkModeToggle.textContent = 'Włącz Tryb Ciemny';
+            }
+        });
 async function loadStats() {
     try {
         const response = await fetch('/api/stats');

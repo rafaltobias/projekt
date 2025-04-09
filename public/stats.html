@@ -44,7 +44,7 @@
             <!-- Active Users -->
             <div class="card p-4 highlight-card">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-gray-600">Active Users</h2>
+                    <h2 class="text-gray-600">Total Visits</h2>
                 </div>
                 <p class="text-2xl font-bold text-gray-800" id="totalVisits"></p>
             </div>
@@ -122,18 +122,35 @@
 
         <!-- Export Section -->
         <div class="text-center p-4 mt-6">
-            <label for="days">Export data for the last:</label>
-            <input type="radio" id="1d" name="days" value="1" checked>
-            <label for="1d">1 day</label>
-            <input type="radio" id="7d" name="days" value="7">
-            <label for="7d">7 days</label>
-            <input type="radio" id="30d" name="days" value="30">
-            <label for="30d">30 days</label>
-            <input type="radio" id="custom" name="days" value="custom">
-            <label for="custom">Custom days:</label>
-            <input type="number" id="customDays" name="customDays" min="1" style="width: 60px;" disabled>
-            <button id="exportDataBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Export Data to CSV</button>
+            <label class="block mb-2 text-lg font-medium">Export data for the last:</label>
+            <div class="inline-flex flex-wrap items-center justify-center gap-4">
+                <!-- 1 Day -->
+                <label for="1d" class="flex items-center cursor-pointer">
+                    <input type="radio" id="1d" name="days" value="1" class="hidden peer">
+                    <span class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg peer-checked:bg-blue-600 peer-checked:text-white transition-colors">1 day</span>
+                </label>
+                <!-- 7 Days -->
+                <label for="7d" class="flex items-center cursor-pointer">
+                    <input type="radio" id="7d" name="days" value="7" class="hidden peer">
+                    <span class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg peer-checked:bg-blue-600 peer-checked:text-white transition-colors">7 days</span>
+                </label>
+                <!-- 30 Days -->
+                <label for="30d" class="flex items-center cursor-pointer">
+                    <input type="radio" id="30d" name="days" value="30" class="hidden peer">
+                    <span class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg peer-checked:bg-blue-600 peer-checked:text-white transition-colors">30 days</span>
+                </label>
+                <!-- Custom Days -->
+                <label for="custom" class="flex items-center cursor-pointer">
+                    <input type="radio" id="custom" name="days" value="custom" class="hidden peer">
+                    <span class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg peer-checked:bg-blue-600 peer-checked:text-white transition-colors">Custom days:</span>
+                </label>
+                <input type="number" id="customDays" name="customDays" min="1" class="w-16 px-2 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:bg-gray-100" disabled>
+            </div>
+            <button id="exportDataBtn" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Export Data to CSV</button>
         </div>
+        <button id="darkModeToggle" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-gray-700 dark:hover:bg-gray-600">
+            Włącz Tryb Ciemny
+        </button>
     </main>
 
     <!-- Include JavaScript -->
