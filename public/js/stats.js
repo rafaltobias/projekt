@@ -86,7 +86,17 @@ async function loadStats() {
                     '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
                 return;
             }
-        
+            const sortedData = data.sort((a, b) => b.count - a.count);
+            const topCategories = sortedData.slice(0, 5);
+            const otherCategories = sortedData.slice(5);
+            
+            if (otherCategories.length > 0) {
+                const otherCount = otherCategories.reduce((sum, item) => sum + item.count, 0);
+                topCategories.push({
+                    referrer: 'Inne', // lub użyj odpowiedniego pola, np. 'browser'
+                    count: otherCount
+                });
+            }
             const chartData = [{
                 labels: data.map(item => item.referrer || item.browser || defaultLabel),
                 values: data.map(item => item.count),
@@ -161,7 +171,40 @@ async function loadStats() {
                 displaylogo: false
             });
         }
+        function createLineChart(data, containerId, title, xAxisTitle, yAxisTitle, color = '#3B82F6') {
+            if (!data || !data.length) {
+                document.getElementById(containerId).innerHTML = 
+                    '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+                return;
+            }
+        
+            const chartData = [{
+                x: data.map(item => item.period),
+                y: data.map(item => item.count || 0),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: color },
+                connectgaps: true
+            }];
+        
+            const layout = {
+                title: title,
+                font: { family: 'system-ui, -apple-system, sans-serif' },
+                xaxis: {
+                    title: xAxisTitle,
+                    tickangle: -45
+                },
+                yaxis: {
+                    title: yAxisTitle
+                },
+                margin: { b: 100 }
+            };
+        
+            Plotly.newPlot(containerId, chartData, layout, commonConfig);
+        }
 
+        createPieChart(stats.referrers, 'referrersChart', 'Źródła odwiedzin', 'Bezpośrednie');
+        createPieChart(stats.browsers, 'browsersChart', 'Przeglądarki', 'Nieznana');
         createBarChart(stats.topPages, 'topPagesChart', 
             'Liczba odwiedzin stron', 'Strona', 'Liczba odwiedzin');
 
@@ -215,7 +258,7 @@ async function loadStats() {
                 '30d': 'ostatnie 30 dni'
             };
 
-            createBarChart(
+            createLineChart(
                 visitTimes,
                 'visitTimeChart',
                 `Liczba odwiedzin (${periodLabels[period]})`,
@@ -229,7 +272,6 @@ async function loadStats() {
         document.getElementById('btn30d').addEventListener('click', () => updateVisitTimeChart('30d'));
 
         updateVisitTimeChart('1d');
-
     } catch (error) {
         console.error('Error loading stats:', error);
         document.getElementById('visitTimeChart').innerHTML = 
