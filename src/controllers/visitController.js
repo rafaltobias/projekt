@@ -1,7 +1,7 @@
 const UAParser = require('ua-parser-js');
 const visitModel = require('../models/visitModel');
 const crypto = require('crypto');
-
+const geoip = require('geoip-lite');
 exports.trackVisit = async (req, res) => {
     try {
         const parser = new UAParser(req.headers['user-agent']);
@@ -16,7 +16,7 @@ exports.trackVisit = async (req, res) => {
             browser: uaResult.browser.name,
             os: uaResult.os.name,
             device: uaResult.device.model || 'Desktop',
-            country: req.headers['cf-ipcountry'] || 'Unknown',
+            country: geo.country|| 'Unknown',
             session_id: sessionId,
             is_entry_page: false,
             is_exit_page: true,

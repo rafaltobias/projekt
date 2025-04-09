@@ -70,7 +70,6 @@ async function loadStats() {
     try {
         const response = await fetch('/api/stats');
         const stats = await response.json();
-        console.log('Stats data:', stats);
 
         const commonConfig = {
             responsive: true,
@@ -81,20 +80,56 @@ async function loadStats() {
         document.getElementById('totalVisits').textContent = stats.totalVisits || 'Brak danych';
         document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors || 'Brak danych';
 
+        function createPieChart(data, containerId, title, defaultLabel = 'Nieznane') {
+            if (!data || !data.length) {
+                document.getElementById(containerId).innerHTML = 
+                    '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
+                return;
+            }
+        
+            const chartData = [{
+                labels: data.map(item => item.referrer || item.browser || defaultLabel),
+                values: data.map(item => item.count),
+                type: 'pie'
+            }];
+        
+            const layout = {
+                title: title,
+                showlegend: false, // Disables the legend
+                font: { family: 'system-ui, -apple-system, sans-serif' },
+                legend: {
+                    orientation: 'h', // Horizontal legend
+                    traceorder: 'normal', // Left-to-right order
+                    x: 0, // Align legend to the left
+                    y: -0.5, // Position legend below the chart
+                    xanchor: 'left',
+                    yanchor: 'top',
+                    font: { size: 8 } // Reduce font size for better fit
+                },
+                margin: { t: 50, b: 100 } // Adjust margins for legend space
+            };
+        
+            Plotly.newPlot(containerId, chartData, layout, {
+                responsive: true,
+                displayModeBar: false,
+                displaylogo: false,
+            });
+        }
+        
         function createBarChart(data, containerId, title, xAxisTitle, yAxisTitle, color = '#3B82F6') {
             if (!data || !data.length) {
                 document.getElementById(containerId).innerHTML = 
                     '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
                 return;
             }
-
+        
             const chartData = [{
                 x: data.map(item => item.page_url || item.country || item.period),
                 y: data.map(item => item.count || item.visits),
                 type: 'bar',
-                marker: { color: color }
+                marker: { color: color },
             }];
-
+        
             const layout = {
                 title: title,
                 font: { family: 'system-ui, -apple-system, sans-serif' },
@@ -108,31 +143,23 @@ async function loadStats() {
                 yaxis: {
                     title: yAxisTitle
                 },
-                margin: { b: 100 }
+                margin: { b: 100 },
+                legend: {
+                    orientation: 'h', 
+                    traceorder: 'normal', 
+                    x: 0, 
+                    y: -0.5, // Position legend below the chart
+                    xanchor: 'left',
+                    yanchor: 'top',
+                    font: { size: 8 } // Reduce font size for better fit
+                }
             };
-
-            Plotly.newPlot(containerId, chartData, layout, commonConfig);
-        }
-
-        function createPieChart(data, containerId, title, defaultLabel = 'Nieznane') {
-            if (!data || !data.length) {
-                document.getElementById(containerId).innerHTML = 
-                    '<p class="text-center text-gray-600">Brak danych do wyświetlenia wykresu</p>';
-                return;
-            }
-
-            const chartData = [{
-                labels: data.map(item => item.referrer || item.browser || defaultLabel),
-                values: data.map(item => item.count),
-                type: 'pie'
-            }];
-
-            const layout = {
-                title: title,
-                font: { family: 'system-ui, -apple-system, sans-serif' }
-            };
-
-            Plotly.newPlot(containerId, chartData, layout, commonConfig);
+        
+            Plotly.newPlot(containerId, chartData, layout, {
+                responsive: true,
+                displayModeBar: false,
+                displaylogo: false
+            });
         }
 
         createBarChart(stats.topPages, 'topPagesChart', 
@@ -144,7 +171,7 @@ async function loadStats() {
         createPieChart(stats.browsers, 'browsersChart', 
             'Przeglądarki', 'Nieznana');
 
-        createBarChart(stats.countryStats, 'countryStatsChart',
+         createBarChart(stats.countryStats, 'countryStatsChart',
             'Odwiedziny według krajów', 'Kraj', 'Liczba odwiedzin');
 
         createBarChart(stats.entryPages, 'entryPagesChart',
@@ -227,5 +254,47 @@ window.addEventListener('resize', function() {
         if (document.getElementById(id)) {
             Plotly.Plots.resize(id);
         }
+    });
+});
+
+async function exportData() {
+    let days = document.querySelector('input[name="days"]:checked').value;
+    if (days === 'custom') {
+        days = document.getElementById('customDays').value;
+    }
+
+    const now = new Date();
+    const formattedDate = now.toISOString().slice(0, 10);
+    const filename = `stats_${formattedDate}_${days}.csv`;
+
+    try {
+        const response = await fetch(`/api/exportStats?days=${days}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const csvData = await response.text();
+
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        alert('Error exporting data. See console for details.');
+    }
+}
+
+document.getElementById('exportDataBtn').addEventListener('click', exportData);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const customRadio = document.getElementById('custom');
+    const customDaysInput = document.getElementById('customDays');
+
+    customRadio.addEventListener('change', () => {
+        customDaysInput.disabled = !customRadio.checked;
     });
 });

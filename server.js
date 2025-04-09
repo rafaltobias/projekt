@@ -16,7 +16,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-
+app.get('/api/exportStats', statsController.exportStats);
 app.post('/track', visitController.trackVisit);
 app.get('/api/stats', statsController.getStats);
 app.get('/stats', statsController.getStatsPage);

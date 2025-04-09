@@ -6,7 +6,6 @@
     <title>Statystyki - SpeedRent</title>
     <link href="css/output.css" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
-    <script type="text/javascript" src="/js/stats.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <!-- Nawigacja -->
@@ -58,7 +57,7 @@
                     <div id="browsersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
+             <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
                     <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
@@ -87,10 +86,25 @@
             </div>
         </div>
     </section>
+
+    <div class="text-center p-4">
+        <label for="days">Eksportuj dane z ostatnich:</label>
+        <input type="radio" id="1d" name="days" value="1" checked>
+        <label for="1d">1 dzień</label>
+        <input type="radio" id="7d" name="days" value="7">
+        <label for="7d">7 dni</label>
+        <input type="radio" id="30d" name="days" value="30">
+        <label for="30d">30 dni</label>
+        <input type="radio" id="custom" name="days" value="custom">
+        <label for="custom">Niestandardowa liczba dni:</label>
+        <input type="number" id="customDays" name="customDays" min="1" style="width: 60px;" disabled>
+        <button id="exportDataBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Eksportuj dane</button>
+    </div>
  
     <!-- Stopka -->
     <footer class="bg-blue-600 text-white text-center p-4">
         <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
     </footer>
+    <script type="text/javascript" src="/js/stats.js"></script>
 </body>
 </html>

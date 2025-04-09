@@ -43,3 +43,17 @@ exports.getCountryStats = async () => {
         'SELECT country, COUNT(*) as count FROM visits GROUP BY country ORDER BY count DESC'
     );
 };
+
+exports.getStatsForExport = async (days) => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const cutoffISO = cutoff.toISOString().slice(0, 19).replace('T', ' ');
+
+    const query = `
+        SELECT id, timestamp, page_url, referrer, user_agent, browser, os, device, country, session_id 
+        FROM visits 
+        WHERE timestamp >= $1
+    `;
+
+    return await db.query(query, [cutoffISO]);
+};

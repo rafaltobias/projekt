@@ -1,6 +1,7 @@
 const statsModel = require('../models/statsModel');
 const visitModel = require('../models/visitModel');
 const path = require('path');
+const { stringify } = require('csv-stringify');
 
 exports.getStats = async (req, res) => {
     try {
@@ -49,4 +50,74 @@ exports.getStats = async (req, res) => {
 
 exports.getStatsPage = (req, res) => {
     res.sendFile(path.join(__dirname, '../../public/stats.html'));
+};
+
+exports.exportStats = async (req, res) => {
+    try {
+        const days = req.query.days;
+
+        const data = await statsModel.getStatsForExport(days);
+
+        const visits = data.rows;
+
+        if (!visits || visits.length === 0) {
+            console.log('No visits found for the last', days, 'days');
+            return res.status(200).send(''); 
+        }
+
+        const columns = [
+            "id",
+            "timestamp",
+            "page_url",
+            "referrer",
+            "user_agent",
+            "browser",
+            "os",
+            "device",
+            "country",
+            "session_id",
+        ];
+
+       const csvStringifier = stringify({
+            header: true,
+            columns: columns,
+        }, (err, output) => {
+            if (err) {
+              console.error('Error during CSV stringify:', err);
+              return res.status(500).json({ error: 'CSV stringify error', message: err.message });
+            }
+
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename="stats.csv"');
+            res.status(200).send(output);
+
+        });
+
+        const records = visits.map((visit) => [
+            visit.id,
+            visit.timestamp,
+            visit.page_url,
+            visit.referrer,
+            visit.user_agent,
+            visit.browser,
+            visit.os,
+            visit.device,
+            visit.country,
+            visit.session_id,
+        ]);
+
+        records.forEach(record => {
+            csvStringifier.write(record);
+        });
+
+        csvStringifier.end();
+
+    } catch (err) {
+        console.error('Error in exporting stats:', err);
+        res.status(500).json({
+            error: 'Error exporting stats',
+            message: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
 };
