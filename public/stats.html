@@ -1,110 +1,142 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statystyki - SpeedRent</title>
-    <link href="css/output.css" rel="stylesheet">
+    <title>Analytics Dashboard</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight-card {
+            border: 2px solid #ff6f61;
+        }
+        .chart-container {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <!-- Nawigacja -->
-    <nav class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">SpeedRent</h1>
-            <ul class="flex space-x-6">
-                <li><a href="index.html#oferta" class="hover:underline">Oferta</a></li>
-                <li><a href="index.html#cennik" class="hover:underline">Cennik</a></li>
-                <li><a href="kontakt.html" class="hover:underline">Kontakt</a></li>
-            </ul>
+    <!-- Header -->
+    <header class="bg-white p-4 flex justify-between items-center shadow">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <a href="index.html">
+                <h1 class="text-lg font-semibold text-gray-800">Analytics Dashboard</h1>
+            </a>
         </div>
-    </nav>
- 
-    <!-- Sekcja powitalna -->
-    <header class="bg-blue-800 text-white text-center py-16">
-        <div class="container mx-auto">
-            <h2 class="text-4xl font-bold mb-4">Statystyki odwiedzin</h2>
-            <p class="text-xl">Sprawdź jak użytkownicy korzystają z naszej strony</p>
-        </div>
+
     </header>
- 
-    <!-- Sekcja statystyk -->
-    <section id="stats" class="py-12">
-        <div class="container mx-auto px-4">
-            <h3 class="text-3xl font-bold text-center mb-8">Szczegółowe dane</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-2">Łączna liczba odwiedzin</h4>
-                    <p class="text-gray-600 text-lg" id="totalVisits">Ładowanie...</p>
+
+    <!-- Main Content -->
+    <main class="p-6">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <!-- Active Users -->
+            <div class="card p-4 highlight-card">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">Active Users</h2>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-2">Unikalni użytkownicy</h4>
-                    <p class="text-gray-600 text-lg" id="uniqueVisitors">Ładowanie...</p>
-                </div>
+                <p class="text-2xl font-bold text-gray-800" id="totalVisits"></p>
             </div>
- 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Najpopularniejsze strony</h4>
-                    <div id="topPagesChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+
+            <!-- Unique Visitors -->
+            <div class="card p-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">Unique Visitors</h2>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Źródła odwiedzin</h4>
-                    <div id="referrersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Przeglądarki</h4>
-                    <div id="browsersChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
-                </div>
+                <p class="text-2xl font-bold text-gray-800" id="uniqueVisitors"></p>
             </div>
-             <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według krajów</h4>
-                    <div id="countryStatsChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Odwiedziny według czasu</h4>
-                    <div id="visitTimeChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
-                    <div class="flex justify-center mt-4">
-                        <button id="btn1d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">1d</button>
-                        <button id="btn7d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">7d</button>
-                        <button id="btn30d" class="bg-blue-600 text-white px-4 py-2 mx-2 rounded">30d</button>
+        </div>
+
+        <!-- User Activity and Traffic Sources -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- User Activity -->
+            <div class="col-span-2 card p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-gray-600">User Activity</h2>
+                    <div class="flex space-x-2">
+                        <button id="btn1d" class="px-3 py-1 bg-gray-200 text-gray-600 rounded">Day</button>
+                        <button id="btn7d" class="px-3 py-1 bg-white text-gray-600 rounded">Week</button>
+                        <button id="btn30d" class="px-3 py-1 bg-white text-gray-600 rounded">Month</button>
                     </div>
                 </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Strony wejściowe</h4>
-                    <div id="entryPagesChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+                <!-- Placeholder for Graph -->
+                <div id="visitTimeChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Graph Placeholder</p>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h4 class="text-xl font-semibold mb-4">Strony wyjściowe</h4>
-                    <div id="exitPagesChart" class="mt-6 pt-4 border-t border-gray-200" style="height: 300px;"></div>
+            </div>
+
+            <!-- Traffic Sources -->
+            <div class="card p-4">
+                <h2 class="text-gray-600 mb-4">Traffic Sources</h2>
+                <div class="chart-container" id="referrersChart"></div>
+            </div>
+        </div>
+
+        <!-- Additional Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <div class="card p-4">
+                <h2 class="text-gray-600">Top Pages</h2>
+                <div id="topPagesChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Top Pages Chart Placeholder</p>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h2 class="text-gray-600">Browsers</h2>
+                <div id="browsersChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Browsers Chart Placeholder</p>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h2 class="text-gray-600">Countries</h2>
+                <div id="countryStatsChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Country Stats Chart Placeholder</p>
                 </div>
             </div>
         </div>
-    </section>
 
-    <div class="text-center p-4">
-        <label for="days">Eksportuj dane z ostatnich:</label>
-        <input type="radio" id="1d" name="days" value="1" checked>
-        <label for="1d">1 dzień</label>
-        <input type="radio" id="7d" name="days" value="7">
-        <label for="7d">7 dni</label>
-        <input type="radio" id="30d" name="days" value="30">
-        <label for="30d">30 dni</label>
-        <input type="radio" id="custom" name="days" value="custom">
-        <label for="custom">Niestandardowa liczba dni:</label>
-        <input type="number" id="customDays" name="customDays" min="1" style="width: 60px;" disabled>
-        <button id="exportDataBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Eksportuj dane</button>
-    </div>
- 
-    <!-- Stopka -->
-    <footer class="bg-blue-600 text-white text-center p-4">
-        <p>© 2025 SpeedRent. Wszystkie prawa zastrzeżone.</p>
-    </footer>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div class="card p-4">
+                <h2 class="text-gray-600">Entry Pages</h2>
+                <div id="entryPagesChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Entry Pages Chart Placeholder</p>
+                </div>
+            </div>
+            <div class="card p-4">
+                <h2 class="text-gray-600">Exit Pages</h2>
+                <div id="exitPagesChart" class="chart-container bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Exit Pages Chart Placeholder</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="text-center p-4 mt-6">
+            <label for="days">Export data for the last:</label>
+            <input type="radio" id="1d" name="days" value="1" checked>
+            <label for="1d">1 day</label>
+            <input type="radio" id="7d" name="days" value="7">
+            <label for="7d">7 days</label>
+            <input type="radio" id="30d" name="days" value="30">
+            <label for="30d">30 days</label>
+            <input type="radio" id="custom" name="days" value="custom">
+            <label for="custom">Custom days:</label>
+            <input type="number" id="customDays" name="customDays" min="1" style="width: 60px;" disabled>
+            <button id="exportDataBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Export Data to CSV</button>
+        </div>
+    </main>
+
+    <!-- Include JavaScript -->
     <script type="text/javascript" src="/js/stats.js"></script>
 </body>
 </html>

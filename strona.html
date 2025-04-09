@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for specific elements */
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight-card {
+            border: 2px solid #ff6f61;
+        }
+        .traffic-bar {
+            height: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="bg-white p-4 flex justify-between items-center shadow">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h1 class="text-lg font-semibold text-gray-800">Analytics Dashboard</h1>
+        </div>
+        <div class="flex items-center">
+            <span class="text-gray-600 mr-4">John Smith</span>
+            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center">JS</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-6">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <!-- Active Users -->
+            <div class="card p-4 highlight-card">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">Active Users</h2>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">1,284</p>
+                <p class="text-green-500 text-sm">+12.5%</p>
+            </div>
+
+            <!-- Session Duration -->
+            <div class="card p-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">Session Duration</h2>
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">4m 32s</p>
+                <p class="text-red-500 text-sm">-3.8%</p>
+            </div>
+
+            <!-- Bounce Rate -->
+            <div class="card p-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">Bounce Rate</h2>
+                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">42.3%</p>
+                <p class="text-red-500 text-sm">+7.2%</p>
+            </div>
+
+            <!-- New Users -->
+            <div class="card p-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-gray-600">New Users</h2>
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">128</p>
+                <p class="text-green-500 text-sm">+18.4%</p>
+            </div>
+        </div>
+
+        <!-- User Activity and Traffic Sources -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- User Activity -->
+            <div class="col-span-2 card p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-gray-600">User Activity</h2>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-gray-200 text-gray-600 rounded">Day</button>
+                        <button class="px-3 py-1 bg-white text-gray-600 rounded">Week</button>
+                        <button class="px-3 py-1 bg-white text-gray-600 rounded">Month</button>
+                    </div>
+                </div>
+                <!-- Placeholder for Graph -->
+                <div class="h-48 bg-gray-100 rounded flex items-center justify-center">
+                    <p class="text-gray-500">Graph Placeholder (01 May - 28 May)</p>
+                </div>
+            </div>
+
+            <!-- Traffic Sources -->
+            <div class="card p-4">
+                <h2 class="text-gray-600 mb-4">Traffic Sources</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <span class="w-16 text-gray-600">Direct</span>
+                        <div class="w-full bg-gray-200 rounded">
+                            <div class="traffic-bar bg-blue-500" style="width: 35%"></div>
+                        </div>
+                        <span class="ml-2 text-gray-600">35%</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-16 text-gray-600">Social</span>
+                        <div class="w-full bg-gray-200 rounded">
+                            <div class="traffic-bar bg-purple-500" style="width: 28%"></div>
+                        </div>
+                        <span class="ml-2 text-gray-600">28%</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-16 text-gray-600">Search</span>
+                        <div class="w-full bg-gray-200 rounded">
+                            <div class="traffic-bar bg-green-500" style="width: 22%"></div>
+                        </div>
+                        <span class="ml-2 text-gray-600">22%</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-16 text-gray-600">Email</span>
+                        <div class="w-full bg-gray-200 rounded">
+                            <div class="traffic-bar bg-yellow-500" style="width: 15%"></div>
+                        </div>
+                        <span class="ml-2 text-gray-600">15%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
